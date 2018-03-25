@@ -48,7 +48,9 @@ void show() {
 }
 
 inline mat quick_pow(mat x , ll y) {
-    mat r ;
+
+	
+	mat r ;
     for(int i = 0 ; i < 3 ; i ++)
         for(int j = 0 ; j < 3 ; j ++)
             r.x[i][j] = (i == j) ;
@@ -117,5 +119,53 @@ int main() {
 	printf("%d\n" , x.x[0][1]);
 	return 0;
 }
-
+/// 正解
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+inline ll read()
+{
+    ll x=0,f=1;char ch=getchar();
+    while(ch<'0'||ch>'9'){if(ch=='-')f=-1;ch=getchar();}
+    while(ch>='0'&&ch<='9'){x=x*10+ch-'0';ch=getchar();}
+    return x*f;
+}
+#define MN 10000
+#define MOD 1000000007
+struct P{ll x;int y,z;}p[MN*2+5];
+bool cmp(const P&a,const P&b){return a.x<b.x;}
+struct mat{int z[3][3];}x,a[8];
+inline mat operator*(const mat&a,const mat&b)
+{
+	mat c;memset(c.z,0,sizeof(c.z));
+	for(int i=0;i<3;++i)for(int j=0;j<3;++j)for(int k=0;k<3;++k)
+		c.z[i][k]=(c.z[i][k]+1LL*a.z[i][j]*b.z[j][k])%MOD;
+	return c;
+};
+int u[4];
+int cal(){return (u[1]?4:0)+(u[2]?2:0)+(u[3]?1:0);}
+inline mat pw(mat x,ll y)
+{
+	mat r;
+	for(int i=0;i<3;++i)for(int j=0;j<3;++j)r.z[i][j]=i==j;
+	for(;y;y>>=1,x=x*x)if(y&1)r=r*x;
+	return r;
+}
+int main()
+{
+	int n=read(),i,j;ll m=read();
+	for(i=1;i<=n;++i)j=read(),p[i]=(P){read(),j,1},p[i+n]=(P){read()+1,j,-1};
+	sort(p+1,p+n+n+1,cmp);
+	for(i=0;i<8;++i)
+	{
+		if(!(i&4))a[i].z[0][0]=a[i].z[1][0]=1;
+		if(!(i&2))a[i].z[0][1]=a[i].z[1][1]=a[i].z[2][1]=1;
+		if(!(i&1))a[i].z[1][2]=a[i].z[2][2]=1;
+	}
+	x.z[0][1]=1;p[0].x=2;
+	for(i=1;i<=n+n;++i)x=x*pw(a[cal()],p[i].x-p[i-1].x),u[p[i].y]+=p[i].z;
+	x=x*pw(a[0],m-p[n+n].x+1);
+	printf("%d",x.z[0][1]);
+	return 0;
+}
 
